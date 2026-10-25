@@ -6,5 +6,13 @@ afterEach(() => {
   cleanup();
 });
 
-// jsdom no implementa scrollTo.
+// jsdom no implementa scrollTo ni ResizeObserver
 window.scrollTo = () => {};
+
+class ResizeObserverMock {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
+window.ResizeObserver = ResizeObserverMock;

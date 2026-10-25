@@ -12,7 +12,7 @@ function renderAt(path: string) {
 }
 
 describe('Enrutamiento (§4.0)', () => {
-  it('muestra la cabecera global con los enlaces en orden y "Modo demo"', () => {
+  it('muestra la cabecera global con los enlaces en orden y "Modo demo"', async () => {
     renderAt('/');
     const nav = screen.getByRole('navigation', { name: 'Principal' });
     const links = within(nav)
@@ -21,15 +21,16 @@ describe('Enrutamiento (§4.0)', () => {
     expect(links).toEqual(['Tablero', 'Analizar correo', 'Historial']);
     expect(screen.getByText('Modo demo')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Detector de Phishing' })).toHaveAttribute('href', '/');
+    await screen.findByRole('heading', { level: 2, name: 'Correos analizados' });
   });
 
   it.each([
     ['/', 'Tablero de detección'],
     ['/analizar', 'Analizar un correo'],
     ['/historial', 'Historial de análisis'],
-  ])('la ruta %s tiene un único h1 "%s"', (path, heading) => {
+  ])('la ruta %s tiene un único h1 "%s"', async (path, heading) => {
     renderAt(path);
-    const h1s = screen.getAllByRole('heading', { level: 1 });
+    const h1s = await screen.findAllByRole('heading', { level: 1 });
     expect(h1s).toHaveLength(1);
     expect(h1s[0]).toHaveTextContent(heading);
   });

@@ -10,8 +10,8 @@ function normalizeBaseUrl(raw: string | undefined): string {
 export const config = {
   /** Base de la API. Vacío = mismo origen (`/api/*`), recomendado por §3.1. */
   apiBaseUrl: normalizeBaseUrl(import.meta.env.VITE_API_BASE_URL),
-  /** Usa la API simulada del navegador (supuesto S1). */
-  useMockApi: import.meta.env.VITE_API_MOCK === 'true',
+  /** Usa la API simulada del navegador (supuesto S1 o en pruebas). */
+  useMockApi: import.meta.env.VITE_API_MOCK === 'true' || import.meta.env.MODE === 'test',
   /** Zona horaria de presentación de fechas (§4.3 P04-E6, §5.6). */
   timeZone: 'America/Bogota',
   /** Configuración regional de la interfaz. */
