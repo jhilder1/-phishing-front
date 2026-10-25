@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { ShieldIcon } from '@/components/Icons';
 import { useDemoMode } from '@/context/DemoModeContext';
 import { routes } from '@/lib/routes';
 
@@ -24,7 +25,10 @@ export function Layout() {
       <header className="app-header">
         <div className="container app-header__inner">
           <NavLink to={routes.dashboard} className="app-brand" end>
-            Detector de Phishing
+            <span className="app-brand__icon-wrap" aria-hidden="true">
+              <ShieldIcon size={20} />
+            </span>
+            <span>Detector de Phishing</span>
           </NavLink>
           <nav className="app-nav" aria-label="Principal">
             <NavLink to={routes.dashboard} end>
@@ -57,6 +61,25 @@ export function Layout() {
       <main id="contenido" className="container app-main" tabIndex={-1} key={String(isDemoMode)}>
         <Outlet />
       </main>
+      <footer className="app-footer">
+        <div className="container app-footer__inner">
+          <div className="app-footer__brand">
+            <span className="app-footer__icon" aria-hidden="true">
+              <ShieldIcon size={16} />
+            </span>
+            <span>Detector de Phishing · SOC Inteligencia de Amenazas</span>
+          </div>
+          <div className="app-footer__privacy">
+            <span>
+              Privacidad Blindada · Análisis en memoria sin almacenamiento de credenciales
+            </span>
+          </div>
+          <div className="app-footer__status">
+            <span className="app-footer__status-dot" aria-hidden="true" />
+            <span>Sistema en línea v2.0</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
