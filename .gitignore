@@ -1,0 +1,12 @@
+node_modules
+dist
+coverage
+*.local
+.env
+.env.*
+!.env.example
+!.env.mock
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+*.log
