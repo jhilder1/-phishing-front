@@ -16,11 +16,11 @@ function renderAnalyzePage(initialEntries = ['/analizar']) {
 }
 
 describe('P03 · Analizar correo (§4.2)', () => {
-  it('AC-ANAL-01: muestra las 2 pestañas y conserva lo digitado al cambiar entre ellas', () => {
+  it('AC-ANAL-01: muestra las 2 pestañas y conserva lo digitado al cambiar entre ellas', async () => {
     renderAnalyzePage();
 
     expect(
-      screen.getByRole('heading', { level: 1, name: 'Analizar un correo' }),
+      await screen.findByRole('heading', { level: 1, name: 'Analizar un correo' }),
     ).toBeInTheDocument();
     expect(
       screen.getByText(
@@ -47,6 +47,7 @@ describe('P03 · Analizar correo (§4.2)', () => {
 
     // Cambiar a pestaña muestra
     fireEvent.click(tabMuestra);
+    await screen.findByRole('radiogroup');
     expect(screen.queryByLabelText(/Remitente/)).not.toBeInTheDocument();
 
     // Volver a pestaña pegar y comprobar que el valor se preservó
@@ -54,10 +55,10 @@ describe('P03 · Analizar correo (§4.2)', () => {
     expect(screen.getByLabelText(/Remitente/)).toHaveValue('contacto@prueba.com');
   });
 
-  it('AC-ANAL-02: valida campos con mensajes exactos y botón Analizar deshabilitado ante errores', () => {
+  it('AC-ANAL-02: valida campos con mensajes exactos y botón Analizar deshabilitado ante errores', async () => {
     renderAnalyzePage();
 
-    const btnAnalizar = screen.getByTestId('p03-e5');
+    const btnAnalizar = await screen.findByTestId('p03-e5');
     // Inicialmente está deshabilitado porque los campos requeridos están vacíos
     expect(btnAnalizar).toBeDisabled();
 
