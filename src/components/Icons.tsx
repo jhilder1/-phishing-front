@@ -292,3 +292,6 @@ export function BarChartIcon({ size = 18, className, ...props }: IconProps) {
     </svg>
   );
 }
+
+/** Aliases para compatibilidad */
+export { WarningIcon as AlertTriangleIcon, CheckIcon as CheckCircleIcon };

@@ -12,14 +12,7 @@ import {
   YAxis,
 } from 'recharts';
 import { DataTable } from '@/components/DataTable';
-import {
-  ArrowRightIcon,
-  BarChartIcon,
-  CpuIcon,
-  LockIcon,
-  ShieldIcon,
-  ZapIcon,
-} from '@/components/Icons';
+import { ShieldIcon } from '@/components/Icons';
 import { KpiCard } from '@/components/KpiCard';
 import { EmptyState, ErrorState, LoadingState } from '@/components/StateView';
 import { VerdictBadge } from '@/components/VerdictBadge';
@@ -157,95 +150,17 @@ export function DashboardPage() {
 
   return (
     <section className="dashboard-page">
-      {/* Hero Entry Section: Bienvenida, estado de defensa y accesos rápidos */}
-      <div className="hero-entry" data-testid="hero-entry">
-        <div className="hero-entry__header">
-          <div className="hero-entry__status">
-            <span className="hero-entry__status-dot" aria-hidden="true" />
-            <span>CENTRO DE OPERACIONES DE SEGURIDAD · DEFENSA CONTRA PHISHING</span>
-          </div>
-          <h1 className="hero-entry__title">Tablero de detección</h1>
-          <p className="page-subtitle hero-entry__subtitle">Últimos 30 días</p>
-          <p className="hero-entry__description">
-            Plataforma corporativa de inteligencia y mitigación de amenazas. Analice correos
-            sospechosos en tiempo real, neutralice vectores de ingeniería social y monitoree la
-            telemetría institucional.
-          </p>
-          <div className="hero-entry__actions">
-            <Link to={routes.analyze} className="btn btn--hero-primary" data-testid="p02-b1">
-              <ShieldIcon size={18} />
-              <span>Analizar un correo</span>
-              <ArrowRightIcon size={16} />
-            </Link>
-            <Link
-              to={routes.history}
-              className="btn btn--hero-secondary"
-              data-testid="hero-history-btn"
-            >
-              <BarChartIcon size={18} />
-              <span>Ver historial de incidentes</span>
-            </Link>
-          </div>
-
-          <div className="hero-entry__telemetry-bar" aria-label="Telemetría de protección">
-            <div className="telemetry-pill">
-              <span className="telemetry-pill__dot" aria-hidden="true" />
-              <span className="telemetry-pill__label">Motor:</span>
-              <span className="telemetry-pill__val">Heurística v2.0 + LLM</span>
-            </div>
-            <div className="telemetry-pill">
-              <span className="telemetry-pill__label">Triaje:</span>
-              <span className="telemetry-pill__val">&lt; 50 ms</span>
-            </div>
-            <div className="telemetry-pill">
-              <span className="telemetry-pill__label">Privacidad:</span>
-              <span className="telemetry-pill__val">PII Blindada</span>
-            </div>
-            <div className="telemetry-pill">
-              <span className="telemetry-pill__label">Defensa:</span>
-              <span className="telemetry-pill__val telemetry-pill__val--live">Activa</span>
-            </div>
-          </div>
+      {/* Cabecera del Tablero (§4.1) */}
+      <header className="page-header dashboard-header">
+        <div>
+          <h1>Tablero de detección</h1>
+          <p className="page-subtitle">Últimos 30 días</p>
         </div>
-
-        <div className="hero-entry__capabilities">
-          <div className="capability-card">
-            <div className="capability-card__icon capability-card__icon--zap">
-              <ZapIcon size={20} />
-            </div>
-            <div className="capability-card__content">
-              <h3 className="capability-card__title">Triaje Heurístico</h3>
-              <p className="capability-card__text">
-                Filtro sintáctico en milisegundos de cabeceras, SPF y dominios sin costo de LLM.
-              </p>
-            </div>
-          </div>
-
-          <div className="capability-card">
-            <div className="capability-card__icon capability-card__icon--cpu">
-              <CpuIcon size={20} />
-            </div>
-            <div className="capability-card__content">
-              <h3 className="capability-card__title">Agente IA Autónomo</h3>
-              <p className="capability-card__text">
-                Detección contextual de suplantación BEC, fraude financiero y urgencia psicológica.
-              </p>
-            </div>
-          </div>
-
-          <div className="capability-card">
-            <div className="capability-card__icon capability-card__icon--lock">
-              <LockIcon size={20} />
-            </div>
-            <div className="capability-card__content">
-              <h3 className="capability-card__title">Privacidad Blindada</h3>
-              <p className="capability-card__text">
-                Enmascaramiento irreversible de correos y credenciales antes de cualquier guardado.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+        <Link to={routes.analyze} className="btn btn--primary" data-testid="p02-b1">
+          <ShieldIcon size={18} />
+          <span>Analizar un correo</span>
+        </Link>
+      </header>
 
       {/* 4 Tarjetas KPI (§4.1 P02-K1 a K4) */}
       <div className="kpi-grid" data-testid="kpi-grid">

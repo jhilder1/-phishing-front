@@ -18,14 +18,18 @@ describe('Enrutamiento (§4.0)', () => {
     const links = within(nav)
       .getAllByRole('link')
       .map((a) => a.textContent);
-    expect(links).toEqual(['Tablero', 'Analizar correo', 'Historial']);
+    expect(links).toEqual(['Inicio', 'Tablero', 'Analizar correo', 'Historial']);
     expect(screen.getByText('Modo demo')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Detector de Phishing' })).toHaveAttribute('href', '/');
-    await screen.findByRole('heading', { level: 2, name: 'Correos analizados' });
+    await screen.findByRole('heading', {
+      level: 2,
+      name: /Cómo analiza el sistema un correo sospechoso/i,
+    });
   });
 
   it.each([
-    ['/', 'Tablero de detección'],
+    ['/', 'Detección Inteligente de Phishing con Agentes IA y Triaje Heurístico'],
+    ['/tablero', 'Tablero de detección'],
     ['/analizar', 'Analizar un correo'],
     ['/historial', 'Historial de análisis'],
   ])('la ruta %s tiene un único h1 "%s"', async (path, heading) => {
@@ -41,7 +45,7 @@ describe('Enrutamiento (§4.0)', () => {
     expect(
       screen.getByText('La dirección no existe o el análisis fue eliminado.'),
     ).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Ir al tablero' })).toHaveAttribute('href', '/');
+    expect(screen.getByRole('link', { name: 'Ir al tablero' })).toHaveAttribute('href', '/tablero');
   });
 
   it('AC-DET-05: un id inválido en /analisis/:id muestra G01', () => {

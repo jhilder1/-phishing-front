@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { RefreshIcon, SpinnerIcon } from '@/lib/../components/Icons';
+import { RefreshIcon, ShieldIcon, SpinnerIcon } from '@/components/Icons';
 import { TabPanel, Tabs } from '@/lib/../components/Tabs';
 import { createAnalysis, getSamples } from '@/lib/api';
 import { getAnalizarErrorMessage } from '@/lib/errors';
@@ -375,29 +375,71 @@ export function AnalyzePage() {
           </div>
         )}
 
-        {/* Controles principales y P03-E6 (Progreso) */}
+        {/* Controles principales y P03-E6 (Progreso con simulador de escaneo forense) */}
         <div className="analyze-actions">
           {isSubmitting ? (
-            <div className="analyzing-progress" data-testid="p03-e6">
-              <SpinnerIcon size={20} />
-              <span>Analizando… {elapsedSeconds} s</span>
-              <button
-                type="button"
-                onClick={handleCancel}
-                className="btn btn--secondary btn--sm"
-                data-testid="cancel-analysis"
-              >
-                Cancelar
-              </button>
+            <div className="cyber-scanner-wrapper" data-testid="p03-e6">
+              <div className="cyber-scanner-card">
+                <div className="cyber-scanner-card__header">
+                  <div className="cyber-scanner-card__status">
+                    <span className="cyber-scanner-dot" aria-hidden="true" />
+                    <span>ESCANEANDO AMENAZAS EN TIEMPO REAL</span>
+                  </div>
+                  <span className="cyber-scanner-time">Analizando… {elapsedSeconds} s</span>
+                </div>
+
+                <div className="cyber-scanner-card__body">
+                  <div className="cyber-scanner-laser" aria-hidden="true" />
+                  <div className="cyber-scanner-phase">
+                    <SpinnerIcon size={18} className="icon-spin text-cyan" />
+                    <span className="cyber-scanner-phase-text">
+                      {elapsedSeconds < 1 &&
+                        'Fase 1/4: Desensibilizando PII y entidades en memoria…'}
+                      {elapsedSeconds >= 1 &&
+                        elapsedSeconds < 2 &&
+                        'Fase 2/4: Evaluando sintaxis SPF, DKIM y dominios homoglíficos…'}
+                      {elapsedSeconds >= 2 &&
+                        elapsedSeconds < 3 &&
+                        'Fase 3/4: Agente IA examinando intencionalidad y coerción BEC…'}
+                      {elapsedSeconds >= 3 &&
+                        'Fase 4/4: Sintetizando evidencias forenses y calculando score…'}
+                    </span>
+                  </div>
+
+                  <div className="cyber-scanner-meter" aria-hidden="true">
+                    <div
+                      className="cyber-scanner-meter__bar"
+                      style={{
+                        width: `${Math.min(96, Math.max(22, (elapsedSeconds + 1) * 26))}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className="cyber-scanner-card__footer">
+                  <span className="cyber-scanner-security-note">
+                    🔒 Protección activa · Cero persistencia de credenciales
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleCancel}
+                    className="btn btn--secondary btn--sm"
+                    data-testid="cancel-analysis"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
             </div>
           ) : (
             <button
               type="submit"
               disabled={!isFormValid || isSubmitting}
-              className="btn btn--primary btn--lg"
+              className="btn btn--primary btn--lg btn--analyze-glow"
               data-testid="p03-e5"
             >
-              Analizar
+              <ShieldIcon size={20} />
+              <span>Analizar Correo</span>
             </button>
           )}
         </div>

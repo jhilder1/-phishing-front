@@ -24,16 +24,17 @@ export function Layout() {
       </a>
       <header className="app-header">
         <div className="container app-header__inner">
-          <NavLink to={routes.dashboard} className="app-brand" end>
+          <NavLink to={routes.home} className="app-brand" end>
             <span className="app-brand__icon-wrap" aria-hidden="true">
               <ShieldIcon size={20} />
             </span>
             <span>Detector de Phishing</span>
           </NavLink>
           <nav className="app-nav" aria-label="Principal">
-            <NavLink to={routes.dashboard} end>
-              Tablero
+            <NavLink to={routes.home} end>
+              Inicio
             </NavLink>
+            <NavLink to={routes.dashboard}>Tablero</NavLink>
             <NavLink to={routes.analyze}>Analizar correo</NavLink>
             <NavLink to={routes.history}>Historial</NavLink>
           </nav>
