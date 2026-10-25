@@ -1,6 +1,5 @@
 /**
  * Configuración de ejecución del frontend.
- * Solo contiene valores públicos: el navegador NUNCA conoce la URL ni la clave de n8n (§3.2).
  */
 
 function normalizeBaseUrl(raw: string | undefined): string {

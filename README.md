@@ -1,66 +1,44 @@
-# Detector de Phishing · Frontend
+# Detector de Phishing - Frontend
 
-Interfaz web de la demo del **Detector de Phishing con IA**, según
-`ESPECIFICACION_INTERFAZ_PHISHING.md` v2.0 (reducida).
-
-- React 18.3 + Vite 5 + React Router 6 + Recharts 2 + TypeScript (`strict`)
-- Un solo archivo CSS con variables (sin librerías de estilos)
-- `fetch` nativo hacia `/api/*` (contrato del §5)
+Interfaz web para la detección y análisis de correos sospechosos y visualización de métricas de seguridad.
 
 ## Requisitos
 
-- Node.js 20 LTS o superior
-- npm 10
+- Node.js >= 20
+- npm >= 10
 
-## Puesta en marcha
+## Instalación y ejecución
 
 ```bash
+# Instalar dependencias
 npm install
-cp .env.example .env.local   # en Windows: copy .env.example .env.local
-npm run dev                  # http://localhost:5173 (proxy /api → http://localhost:3001)
-```
 
-Sin backend disponible, use la API simulada:
+# Modo desarrollo
+npm run dev
 
-```bash
+# Modo desarrollo con simulación de datos (mock)
 npm run dev:mock
+
+# Compilación para producción
+npm run build
+
+# Ejecutar pruebas unitarias
+npm test
+
+# Verificación de código y estilos
+npm run lint
 ```
 
-## Scripts
+## Scripts disponibles
 
-| Script             | Función                                               |
-| ------------------ | ----------------------------------------------------- |
-| `npm run dev`      | Vite en el puerto 5173 con proxy de `/api` hacia 3001 |
-| `npm run dev:mock` | Igual, pero con la API simulada en el navegador       |
-| `npm run build`    | Verificación de tipos y compilación en `dist/`        |
-| `npm run preview`  | Sirve `dist/` localmente                              |
-| `npm test`         | Pruebas unitarias (Vitest)                            |
-| `npm run lint`     | ESLint + Prettier en modo verificación                |
-| `npm run format`   | Formatea el código con Prettier                       |
+- `npm run dev`: Inicia el servidor de desarrollo en `http://localhost:5173`.
+- `npm run dev:mock`: Inicia el servidor de desarrollo utilizando datos simulados locales.
+- `npm run build`: Valida tipos TypeScript y genera los archivos estáticos en `dist/`.
+- `npm run preview`: Previsualiza localmente la compilación de producción.
+- `npm test`: Ejecuta las pruebas automatizadas con Vitest.
+- `npm run lint`: Ejecuta el análisis estático de código (ESLint) y validación de formato (Prettier).
+- `npm run format`: Corrige automáticamente el formateo de archivos.
 
 ## Variables de entorno
 
-| Variable               | Descripción                                                                   |
-| ---------------------- | ----------------------------------------------------------------------------- |
-| `VITE_API_BASE_URL`    | Vacío = mismo origen (`/api`). URL absoluta solo si el backend habilita CORS. |
-| `VITE_API_MOCK`        | `true` para usar la API simulada.                                             |
-| `DEV_API_PROXY_TARGET` | Solo desarrollo: destino del proxy de `/api`.                                 |
-
-> Todo lo que empieza por `VITE_` queda visible en el navegador. **Nunca** coloque
-> aquí la URL ni la clave de n8n.
-
-## Estructura
-
-```
-src/
-├─ components/   # Componentes reutilizables (Layout, etc.)
-├─ lib/          # Configuración, rutas, cliente de API, formatos, validación
-├─ pages/        # P02 Tablero, P03 Analizar, P04 Detalle, P05 Historial, G01
-├─ styles/       # app.css (tokens del §10.1)
-└─ test/         # Configuración de pruebas
-```
-
-## Seguridad
-
-ESLint falla si aparece `dangerouslySetInnerHTML`, `innerHTML`, `eval` (AC-SEC-02) o el
-uso de `localStorage`, `sessionStorage` o cookies (§8.3).
+Consulte `.env.example` para configurar las variables requeridas en desarrollo o despliegue.
