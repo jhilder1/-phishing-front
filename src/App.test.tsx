@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { App } from './App';
 import { routerFuture } from './lib/router';
@@ -47,5 +47,17 @@ describe('Enrutamiento (§4.0)', () => {
   it('AC-DET-05: un id inválido en /analisis/:id muestra G01', () => {
     renderAt('/analisis/abc');
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Página no encontrada');
+  });
+
+  it('permite alternar entre Modo demo y Producción desde el interruptor de la cabecera', () => {
+    renderAt('/no-existe');
+    const modeSwitch = screen.getByRole('button', { name: /Modo actual:/i });
+    expect(modeSwitch).toHaveTextContent('Modo demo');
+
+    fireEvent.click(modeSwitch);
+    expect(modeSwitch).toHaveTextContent('Producción');
+
+    fireEvent.click(modeSwitch);
+    expect(modeSwitch).toHaveTextContent('Modo demo');
   });
 });
