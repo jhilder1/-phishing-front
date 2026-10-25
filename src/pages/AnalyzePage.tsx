@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { RefreshIcon, ShieldIcon, SpinnerIcon } from '@/components/Icons';
+import { RefreshIcon, ShieldIcon, SpinnerIcon, WarningIcon } from '@/components/Icons';
 import { TabPanel, Tabs } from '@/lib/../components/Tabs';
 import { createAnalysis, getSamples } from '@/lib/api';
 import { getAnalizarErrorMessage } from '@/lib/errors';
@@ -40,6 +40,7 @@ export function AnalyzePage() {
   // Formulario Modo Muestra
   const [samples, setSamples] = useState<MuestraCaso[]>([]);
   const [selectedSampleId, setSelectedSampleId] = useState<string>('phishing-credenciales');
+  const [samplesError, setSamplesError] = useState<string | null>(null);
 
   // Estado de envío / progreso (§4.2 P03-E6)
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -57,13 +58,27 @@ export function AnalyzePage() {
 
   // Cargar casos de ejemplo
   useEffect(() => {
+    let isMounted = true;
     getSamples()
       .then((data) => {
-        setSamples(data);
+        if (!isMounted) return;
+        if (Array.isArray(data) && data.length > 0) {
+          setSamples(data);
+          setSamplesError(null);
+        } else {
+          setSamples([]);
+          setSamplesError('El backend no respondió con casos de ejemplo.');
+        }
       })
       .catch(() => {
-        // En caso de fallo de red, se mantiene el estado
+        if (!isMounted) return;
+        setSamples([]);
+        setSamplesError('El backend no responde. No se pudieron cargar los casos de ejemplo.');
       });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Validación en vivo de Modo Pegar
@@ -154,8 +169,12 @@ export function AnalyzePage() {
     } catch (err: unknown) {
       const msg = getAnalizarErrorMessage(err);
       setApiError(msg);
-      // Habilitar reintento para errores de motor 502/504
-      if (msg.includes('El motor de análisis no respondió')) {
+      // Habilitar reintento para errores de motor 502/504 o backend no disponible
+      if (
+        msg.includes('El motor de análisis no respondió') ||
+        msg.includes('El backend no responde') ||
+        msg.includes('servidor')
+      ) {
         setCanRetry(true);
       }
     } finally {
@@ -175,10 +194,12 @@ export function AnalyzePage() {
     }
   };
 
+  const safeSamples = Array.isArray(samples) ? samples : [];
+
   const selectedSample =
-    samples.find((s) => s.id === selectedSampleId) ??
+    safeSamples.find((s) => s.id === selectedSampleId) ??
     ((CASOS_MUESTRA_VALIDOS as readonly string[]).includes(selectedSampleId)
-      ? samples[0]
+      ? safeSamples[0]
       : undefined);
 
   return (
@@ -312,12 +333,37 @@ export function AnalyzePage() {
 
         {/* Modo B: Caso de ejemplo */}
         <TabPanel id="muestra" activeId={activeTab}>
+          {samplesError && (
+            <div
+              className="backend-offline-banner"
+              role="alert"
+              data-testid="backend-offline-banner"
+            >
+              <div className="backend-offline-banner__header">
+                <WarningIcon size={18} className="backend-offline-banner__icon" />
+                <strong>El backend no responde</strong>
+              </div>
+              <p className="backend-offline-banner__desc">
+                No se pudieron cargar los casos de ejemplo desde el servidor. Puede escribir o pegar
+                el correo en la pestaña{' '}
+                <button
+                  type="button"
+                  className="link-inline-btn"
+                  onClick={() => handleTabChange('pegar')}
+                >
+                  Pegar contenido
+                </button>{' '}
+                o activar el <strong>Modo demo</strong> en la barra superior.
+              </p>
+            </div>
+          )}
+
           <div
             className="sample-cards-grid"
             role="radiogroup"
             aria-label="Casos de ejemplo disponibles"
           >
-            {samples.map((sample) => {
+            {safeSamples.map((sample) => {
               const isSelected = selectedSampleId === sample.id;
               return (
                 <div

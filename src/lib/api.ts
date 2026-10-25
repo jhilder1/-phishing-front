@@ -16,12 +16,44 @@ import type {
   MuestraCaso,
 } from './types';
 
+async function safeFetch(url: string, init?: RequestInit): Promise<Response> {
+  try {
+    return await fetch(url, init);
+  } catch (err: unknown) {
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      throw err;
+    }
+    throw new ApiError(
+      503,
+      'BACKEND_NO_DISPONIBLE',
+      'El backend no responde. Verifique la conexión con el servidor.',
+    );
+  }
+}
+
 async function handleResponse<T>(response: Response): Promise<T> {
   const isJson = response.headers.get('content-type')?.includes('application/json');
-  const data = isJson ? await response.json() : null;
+  let data: unknown = null;
+  if (isJson) {
+    try {
+      data = await response.json();
+    } catch {
+      data = null;
+    }
+  }
 
   if (!response.ok) {
     throw ApiError.fromResponseBody(response.status, data);
+  }
+
+  // Si la respuesta fue 200/2xx pero devolvió HTML (fallback SPA) o cuerpo vacío no-JSON,
+  // significa que el backend no está respondiendo en este endpoint.
+  if (!isJson || data === null) {
+    throw new ApiError(
+      503,
+      'BACKEND_NO_DISPONIBLE',
+      'El backend no responde o devolvió una respuesta no válida.',
+    );
   }
 
   return data as T;
@@ -36,7 +68,7 @@ export async function getMetricsSummary(signal?: AbortSignal): Promise<MetricasR
     return mockGetMetricsSummary();
   }
 
-  const response = await fetch(apiUrl('/metrics/summary'), {
+  const response = await safeFetch(apiUrl('/metrics/summary'), {
     method: 'GET',
     headers: { Accept: 'application/json' },
     signal,
@@ -71,7 +103,7 @@ export async function listAnalyses(
   const query = searchParams.toString();
   const url = apiUrl(query ? `/analyses?${query}` : '/analyses');
 
-  const response = await fetch(url, {
+  const response = await safeFetch(url, {
     method: 'GET',
     headers: { Accept: 'application/json' },
     signal,
@@ -89,7 +121,7 @@ export async function getAnalysis(id: string, signal?: AbortSignal): Promise<Ana
     return mockGetAnalysis(id);
   }
 
-  const response = await fetch(apiUrl(`/analyses/${encodeURIComponent(id)}`), {
+  const response = await safeFetch(apiUrl(`/analyses/${encodeURIComponent(id)}`), {
     method: 'GET',
     headers: { Accept: 'application/json' },
     signal,
@@ -107,7 +139,7 @@ export async function getSamples(signal?: AbortSignal): Promise<MuestraCaso[]> {
     return mockGetSamples();
   }
 
-  const response = await fetch(apiUrl('/samples'), {
+  const response = await safeFetch(apiUrl('/samples'), {
     method: 'GET',
     headers: { Accept: 'application/json' },
     signal,
@@ -128,7 +160,7 @@ export async function createAnalysis(
     return mockCreateAnalysis(payload, signal);
   }
 
-  const response = await fetch(apiUrl('/analyses'), {
+  const response = await safeFetch(apiUrl('/analyses'), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -146,7 +178,7 @@ export async function createAnalysis(
  * GET /api/health
  */
 export async function getHealth(signal?: AbortSignal): Promise<{ estado: string; mongo?: string }> {
-  const response = await fetch(apiUrl('/health'), {
+  const response = await safeFetch(apiUrl('/health'), {
     method: 'GET',
     headers: { Accept: 'application/json' },
     signal,

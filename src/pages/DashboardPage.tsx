@@ -17,6 +17,7 @@ import { KpiCard } from '@/components/KpiCard';
 import { EmptyState, ErrorState, LoadingState } from '@/components/StateView';
 import { VerdictBadge } from '@/components/VerdictBadge';
 import { getMetricsSummary, listAnalyses } from '@/lib/api';
+import { ApiError } from '@/lib/errors';
 import {
   formatDateTime,
   formatDayMonth,
@@ -48,9 +49,21 @@ export function DashboardPage() {
         listAnalyses({ limite: 10 }),
       ]);
       setMetrics(metricsData);
-      setRecentAnalyses(analysesData.items);
-    } catch {
-      setError('No se pudo cargar el tablero.');
+      setRecentAnalyses(Array.isArray(analysesData?.items) ? analysesData.items : []);
+    } catch (err: unknown) {
+      if (
+        err instanceof ApiError &&
+        (err.status === 503 ||
+          err.status === 502 ||
+          err.status === 504 ||
+          err.codigo === 'BACKEND_NO_DISPONIBLE')
+      ) {
+        setError(
+          'El backend no responde. Verifique la conexión con el servidor o active el Modo demo.',
+        );
+      } else {
+        setError('No se pudo cargar el tablero.');
+      }
     } finally {
       setLoading(false);
     }

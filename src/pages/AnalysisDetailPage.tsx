@@ -40,10 +40,25 @@ export function AnalysisDetailPage() {
 
     try {
       const data = await getAnalysis(analysisId);
+      if (!data || typeof data !== 'object') {
+        throw new ApiError(
+          503,
+          'BACKEND_NO_DISPONIBLE',
+          'El backend no responde o devolvió datos inválidos.',
+        );
+      }
       setAnalysis(data);
     } catch (err: unknown) {
       if (err instanceof ApiError && err.status === 404) {
         setIsNotFound(true);
+      } else if (
+        err instanceof ApiError &&
+        (err.status === 503 ||
+          err.status === 502 ||
+          err.status === 504 ||
+          err.codigo === 'BACKEND_NO_DISPONIBLE')
+      ) {
+        setError('El backend no responde. Verifique que el servicio esté activo.');
       } else {
         setError('No se pudo cargar el análisis.');
       }
@@ -85,7 +100,7 @@ export function AnalysisDetailPage() {
     );
   }
 
-  const veredicto = analysis.resultado.veredicto;
+  const veredicto = analysis.resultado?.veredicto ?? 'sin_indicadores';
   const veredictoLabel = getVeredictoLabel(veredicto);
 
   let VerdictIcon = CheckIcon;
@@ -98,7 +113,7 @@ export function AnalysisDetailPage() {
     verdictClass = 'verdict-heading--suspicious';
   }
 
-  const emailBody = analysis.correo.cuerpo_enmascarado || '';
+  const emailBody = analysis.correo?.cuerpo_enmascarado || '';
   const isEmailLong = emailBody.length > PREVIEW_CHAR_LIMIT;
   const displayedEmail =
     !showFullEmail && isEmailLong ? `${emailBody.slice(0, PREVIEW_CHAR_LIMIT)}…` : emailBody;
@@ -180,13 +195,13 @@ export function AnalysisDetailPage() {
       {/* P04-E8: Indicadores detectados */}
       <section className="analysis-section analysis-card">
         <h2 className="analysis-card__title">Indicadores detectados</h2>
-        {analysis.resultado.indicadores.length === 0 ? (
+        {(analysis.resultado?.indicadores ?? []).length === 0 ? (
           <p className="analysis-empty-text" data-testid="p04-e8-empty">
             No se activaron indicadores.
           </p>
         ) : (
           <ul className="indicators-list" data-testid="p04-e8-list">
-            {analysis.resultado.indicadores.map((ind) => {
+            {(analysis.resultado?.indicadores ?? []).map((ind) => {
               const pesoFormateado = formatPesoIndicador(ind.peso);
               return (
                 <li key={ind.codigo} className="indicator-row">

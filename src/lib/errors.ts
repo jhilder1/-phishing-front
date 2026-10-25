@@ -43,6 +43,9 @@ export function getAnalizarErrorMessage(error: unknown): string {
     if (error.status === 502 || error.status === 504) {
       return 'El motor de análisis no respondió. Intente de nuevo.';
     }
+    if (error.status === 503 || error.codigo === 'BACKEND_NO_DISPONIBLE') {
+      return 'El backend no responde. Verifique que el servicio esté activo.';
+    }
     if (error.status === 500) {
       return 'Ocurrió un error inesperado. Intente de nuevo.';
     }

@@ -5,6 +5,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@/lib/../components/Icons';
 import { EmptyState, ErrorState, LoadingState } from '@/lib/../components/StateView';
 import { VerdictBadge } from '@/lib/../components/VerdictBadge';
 import { listAnalyses } from '@/lib/api';
+import { ApiError } from '@/lib/errors';
 import { formatDateTime, formatResultCount, truncateText } from '@/lib/format';
 import { routes } from '@/lib/routes';
 import type { AnalisisListItem, Veredicto } from '@/lib/types';
@@ -52,11 +53,23 @@ export function HistoryPage() {
         pagina: activePage,
         limite: PAGE_SIZE,
       });
-      setItems(response.items);
-      setTotal(response.total);
-      setTotalPages(response.paginas);
-    } catch {
-      setError('No se pudo cargar el historial.');
+      setItems(Array.isArray(response?.items) ? response.items : []);
+      setTotal(response?.total ?? 0);
+      setTotalPages(response?.paginas ?? 1);
+    } catch (err: unknown) {
+      if (
+        err instanceof ApiError &&
+        (err.status === 503 ||
+          err.status === 502 ||
+          err.status === 504 ||
+          err.codigo === 'BACKEND_NO_DISPONIBLE')
+      ) {
+        setError(
+          'El backend no responde. Verifique la conexión con el servidor o active el Modo demo.',
+        );
+      } else {
+        setError('No se pudo cargar el historial.');
+      }
     } finally {
       setLoading(false);
     }
